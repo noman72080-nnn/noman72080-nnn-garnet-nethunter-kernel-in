@@ -1,0 +1,23 @@
+name: Inspect garnet v3
+on: workflow_dispatch
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone garnet-t-oss
+        run: |
+          git clone --depth=1 -b garnet-t-oss --single-branch https://github.com/MiCode/Xiaomi_Kernel_OpenSource k
+          cd k
+          ls
+          head -5 Makefile
+      - name: Configs
+        run: |
+          cd k
+          ls arch/arm64/configs | head -60 || true
+          find . -maxdepth 4 -name "*garnet*" | head -30 || true
+          find . -maxdepth 3 \( -name "build.config*" -o -name "BUILD*" \) | head || true
+      - name: Wifi and USB options
+        run: |
+          cd k
+          find . -maxdepth 6 -type d \( -name "qcacld*" -o -name "wlan*" \) | head -20 || true
+          grep -rn "USB_CONFIGFS_F_HID\|CONFIG_CFG80211\|CONFIG_MAC80211" arch/arm64/configs | head -20 || true
